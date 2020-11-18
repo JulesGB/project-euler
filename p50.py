@@ -17,7 +17,7 @@ def is_prime(n):
 primes = set()
 composites = set()
 
-upper_bound = 3947
+upper_bound = 10**6
 for n in range(2, upper_bound):
     if n not in composites and is_prime(n):
         primes.add(n)
@@ -32,7 +32,8 @@ primes = sorted(list(primes))
 # brute force approach: O(n^2), requires manual upper_bound testing
 
 # a better approach that doesn't require any manual upper bounds testing would be
-# to generate all primes up to 10**6, and then use binary search to narrow down
+# to generate all primes up to 10**6, and then generate all cumulative prime sums,
+# checking if upper_limit has been reached
 
 prime_sums = {0 : 0}
 for i in range(1, len(primes)):
@@ -40,6 +41,17 @@ for i in range(1, len(primes)):
 
 max_primes = 0
 prime_sum = -1
+
+# begin with full sum of primes, narrowing end down first before increasing start
+for i in range(0, len(primes)):
+    for j in range(i-max_primes-1, -1, -1):
+        ps = prime_sums[i] - prime_sums[j]
+        if ps > upper_bound:
+            break
+
+        if ps in primes:
+            max_primes = i - j
+            prime_sum = ps
 
 """
 i = 0
